@@ -3,7 +3,7 @@
  * @Author: lhuanyu
  * @Date: 2020-03-04 13:28:33
  * @LastEditors: lhuanyu
- * @LastEditTime: 2020-03-04 16:49:06
+ * @LastEditTime: 2020-03-10 15:22:11
  */
 // 关键点： 
 // 1. 发布订阅者模式
@@ -28,6 +28,7 @@ class DeepIntoPromise {
   }
 
   _resolve(arg){
+    if (this.PromiseStatus !== PENDING) return
     let runResolveFn = () => {
         let resolvedFn
         while (resolvedFn = this.resolvedFn.shift()) {
@@ -53,11 +54,12 @@ class DeepIntoPromise {
     }else{
         this.PromiseStatus = RESOLVED
         this.PromiseValue = arg
-        runResolveFn(argValue)
+        runResolveFn(arg)
     }
   }
 
   _reject(arg){
+    if (this.PromiseStatus !== PENDING) return
     this.PromiseStatus = REJECTED
     this.PromiseValue = arg
     let rejectedFn
@@ -75,9 +77,16 @@ class DeepIntoPromise {
 
         // 添加静态 reject方法
     static reject (value) {
-      return new DeepIntoPromise(resolve => reject(value))
+      return new DeepIntoPromise((resolve, reject) => reject(value))
     }
 
+  
+  /**
+   * 只要有一个reject，那么返回的DeepIntoPromises实例的状态就变成rejected，该实例的catch回调接收的参数是第一个reject返回的数据
+   * 所有的都resolve之后，返回的DeepIntoPromises实例的状态才会变成resolved，该实例的then回调接收的参数是resolve返回的数据数组
+   * @param {*} list 
+   * @returns {DeepIntoPromise} DeepIntoPromises实例
+   */
   static all(list){
         return new DeepIntoPromise((resolve, reject) => {
           let values = []
@@ -95,6 +104,34 @@ class DeepIntoPromise {
         })
   }
 
+  /**
+   * 只要有一个resolve，那么返回的DeepIntoPromises实例的状态就变成resolved，该实例的then回调接收的参数是第一个resolve返回的数据
+   * 所有的都reject之后，返回的DeepIntoPromises实例的状态才会变成rejected，该实例的then回调接收的参数是reject返回的错误数组
+   * @param {*} list 
+   * @returns {DeepIntoPromise} DeepIntoPromises实例
+   */
+  static any(list){
+    return new DeepIntoPromise((resolve, reject) => {
+      let values = []
+      let count = 0
+      for(let [i, p] of list.entries()){
+         DeepIntoPromise.resolve(p).then((res) => {
+            resolve(res)
+         }, (err) => {
+            values[i] = err
+            count++
+            // 所有状态都变成fulfilled时返回的MyPromise状态就变成fulfilled
+            if (count === list.length) reject(values)
+         })
+      }
+    })
+  }
+
+  /**
+   * 只要有一个状态变化了，那么返回的DeepIntoPromises实例状态就会变化
+   * @param {*} list
+   * @returns {DeepIntoPromise} DeepIntoPromises实例 
+   */
   static race(list){
       return new DeepIntoPromise((resolve, reject) => {
           for(let p of list){
@@ -107,8 +144,36 @@ class DeepIntoPromise {
       })
   }
 
+  /**
+   * 所有的状态变化之后，返回的DeepIntoPromises实例状态才会变化，并且始终是resolved，也就是返回的所有值都会传入then回调
+   * [
+   *    {status: 'resolved' | 'rejected', value: any},
+   *    {status: 'resolved' | 'rejected', reason: any}
+   * ]
+   * @param {*} list
+   * @returns {DeepIntoPromise} DeepIntoPromises实例 
+   */
+  static allSettled(list){
+    let count = 0
+    let result = []
+    let len = list.length
+    return new DeepIntoPromise((resolve, reject) => {
+        for(let [i, p] of list.entries()){
+           DeepIntoPromise.resolve(p).then((res) => {
+              count++
+              result[i] = {status: 'resolved', value: res}
+              if(count === len) resolve(result)
+           }, (err) => {
+              count++
+              result[i] = {status: 'rejected', reason: err}
+              if(count === len) resolve(result)
+           })
+        }
+    })
+  }
+
   then(resolvedFn, rejectedFn){
-    console.log(this)
+    // console.log(this)
     const { PromiseValue, PromiseStatus } = this    
     // 返回新的promise实例， 这里的resolvedFn返回的值应该传递给这个新的实例的then回调
     // 关键是如何传递呢？需要抓住一个关键点： promise构造函数传入的函数是立即执行的，并且这个新的实例的then也是根据该实例是否调用resolve来实现的。        
@@ -131,7 +196,7 @@ class DeepIntoPromise {
         }
         let oldPromiseRejectedFn = value => {  
             try{
-                if(isFunction(resolvedFn)){
+                if(isFunction(rejectedFn)){
                     let res =  rejectedFn(value);
                     if(res instanceof DeepIntoPromise){
                         res.then(resolve, reject)
@@ -165,10 +230,49 @@ class DeepIntoPromise {
         }        
     })
   }
+
+  catch (onRejected) {
+    return this.then(undefined, onRejected)
+  }
 }
 
-const d1 = new DeepIntoPromise((resolve, reject) => {
-  setTimeout(() => {resolve(100)}, 2000)
-}).then((value) => {console.log('1', value); return new DeepIntoPromise((resolve, reject) => {
-  setTimeout(() => {resolve(200)}, 3000)
-})}).then((value) => {console.log('2', value)})
+function thenHan(res){
+  console.log('then', res)
+}
+function catchHan(res){
+  console.log('catch', res)
+}
+
+const p1 = DeepIntoPromise.resolve('p1')
+const p2 = DeepIntoPromise.resolve('p2')
+DeepIntoPromise.all([p1, p2]).then(thenHan).catch(catchHan)
+
+const p3 = DeepIntoPromise.resolve('p3')
+const p4 = DeepIntoPromise.reject('p4')
+DeepIntoPromise.all([p3, p4]).then(thenHan).catch(catchHan)
+
+const p5 = DeepIntoPromise.resolve('p5')
+const p6 = DeepIntoPromise.reject('p6')
+DeepIntoPromise.any([p5, p6]).then(thenHan).catch(catchHan)
+
+const p7 = DeepIntoPromise.reject('p7')
+const p8 = DeepIntoPromise.reject('p8')
+DeepIntoPromise.any([p7, p8]).then(thenHan).catch(catchHan)
+
+const p9 = DeepIntoPromise.resolve('p9')
+const p10 = DeepIntoPromise.reject('p10')
+DeepIntoPromise.race([p9, p10]).then(thenHan).catch(catchHan)
+
+const p11 = DeepIntoPromise.resolve('p11')
+const p12 = DeepIntoPromise.reject('p12')
+DeepIntoPromise.allSettled([p11, p12]).then(thenHan).catch(catchHan)
+
+// const d1 = new DeepIntoPromise((resolve, reject) => {
+//   setTimeout(() => {resolve(100)}, 2000)
+// }).then((value) => {console.log('1', value); return new DeepIntoPromise((resolve, reject) => {
+//   setTimeout(() => {resolve(200)}, 3000)
+// })}).then((value) => {console.log('2', value)})
+
+// const d2 = new DeepIntoPromise((resolve, reject) => {
+//   reject(100)
+// }).catch( (value) => {console.log('2', value)})
