@@ -91,6 +91,14 @@ class DeepIntoPromise {
         return new DeepIntoPromise((resolve, reject) => {
           let values = []
           let count = 0
+          // 题外话：这里为什么需要用for...of：
+          // 由于数组的遍历会调用遍历器接口，所以任何接受数组作为参数的场合，其实都调用了遍历器接口。
+          //    for...of
+          //    Array.from()
+          //    Map(), Set(), WeakMap(), WeakSet()（比如new Map([['a',1],['b',2]])）
+          //    Promise.all()
+          //    Promise.race()
+          // 不用for...of也可以。
           for(let [i, p] of list.entries()){
              DeepIntoPromise.resolve(p).then((res) => {
                 values[i] = res
