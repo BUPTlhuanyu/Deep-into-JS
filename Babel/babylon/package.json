@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@babel/traverse": "^7.9.0"
+  },
+  "devDependencies": {
+    "@babel/generator": "^7.9.3",
+    "@babel/types": "^7.9.0"
+  }
+}
