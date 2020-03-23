@@ -4,6 +4,7 @@
   },
   "devDependencies": {
     "@babel/generator": "^7.9.3",
-    "@babel/types": "^7.9.0"
+    "@babel/types": "^7.9.0",
+    "esm": "^3.2.25"
   }
 }
