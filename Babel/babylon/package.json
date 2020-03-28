@@ -1,10 +1,14 @@
 {
+  "scripts": {
+    "plugin": "node ./plugin/index.js"
+  },
   "dependencies": {
     "@babel/traverse": "^7.9.0"
   },
   "devDependencies": {
     "@babel/generator": "^7.9.3",
     "@babel/types": "^7.9.0",
+    "babel-plugin-import": "^1.13.0",
     "esm": "^3.2.25"
   }
 }

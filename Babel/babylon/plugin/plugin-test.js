@@ -9,8 +9,8 @@ export default function(babel) {
                 path.insertBefore(t.expressionStatement(t.stringLiteral("Because I'm easy come, easy go."))); 
                 path.insertAfter(t.expressionStatement(t.stringLiteral("A little high, little low."))); 
             },
-            BinaryExpression(path) {
-                console.log('path')
+            BinaryExpression(path, state) {
+                console.log('path', state)
                 if (path.get('left').isIdentifier({ name: "a" })) {
                     // ...
                     console.log('1111')
