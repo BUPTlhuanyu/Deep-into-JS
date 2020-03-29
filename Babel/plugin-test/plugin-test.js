@@ -6,18 +6,19 @@ export default function(babel) {
     return {
         visitor:{
             Program(path){
-              console.log(path)
+              // console.log(path)
             },
             FunctionDeclaration(path) { 
-                console.log('FunctionDeclaration, plugin-test', path)
+                // console.log('FunctionDeclaration, plugin-test', path)
+                path.scope.rename("n")
                 path.insertBefore(t.expressionStatement(t.stringLiteral("Because I'm easy come, easy go."))); 
                 path.insertAfter(t.expressionStatement(t.stringLiteral("A little high, little low."))); 
             },
             BinaryExpression(path, state) {
-                console.log('path', path.hub)
+                // console.log('path', path.hub)
                 if (path.get('left').isIdentifier({ name: "a" })) {
                     // ...
-                    console.log('1111')
+                    // console.log('1111')
                   }
                 // if (path.node.operator !== "+") {
                 //     console.log(1212)

@@ -13,13 +13,13 @@ const str2 = `function square(n) {
 const core = require("@babel/core")
 // parse字符串：babel7使用transformSync
 const result = core.transformSync(str2, {
-    plugins: ["./Babel/plugin-test/plugin-test.js"]
+    plugins: ["./plugin-test.js"]
 });
 console.log(result)
 
 // parse文件
-const result1 = core.transformFileSync('./Babel/plugin-test/file2parse.js', {
-    plugins: ["./Babel/plugin-test/plugin-test.js"]
-});
-console.log(result1)
+// const result1 = core.transformFileSync('./Babel/plugin-test/file2parse.js', {
+//     plugins: ["./Babel/plugin-test/plugin-test.js"]
+// });
+// console.log(result1)
 
