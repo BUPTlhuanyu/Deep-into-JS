@@ -8,9 +8,6 @@ export default function(babel) {
             Program(path){
               console.log(path)
             },
-            File(path){
-              console.log(path)
-            },
             FunctionDeclaration(path) { 
                 console.log('FunctionDeclaration, plugin-test', path)
                 path.insertBefore(t.expressionStatement(t.stringLiteral("Because I'm easy come, easy go."))); 
