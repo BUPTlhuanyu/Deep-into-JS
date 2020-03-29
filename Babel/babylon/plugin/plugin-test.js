@@ -10,7 +10,7 @@ export default function(babel) {
                 path.insertAfter(t.expressionStatement(t.stringLiteral("A little high, little low."))); 
             },
             BinaryExpression(path, state) {
-                console.log('path', state)
+                console.log('path', path.hub)
                 if (path.get('left').isIdentifier({ name: "a" })) {
                     // ...
                     console.log('1111')
