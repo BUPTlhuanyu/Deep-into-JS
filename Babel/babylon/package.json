@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "plugin": "node ./plugin/index.js"
+    "start": "node ./index.js"
   },
   "dependencies": {
     "@babel/traverse": "^7.9.0"
