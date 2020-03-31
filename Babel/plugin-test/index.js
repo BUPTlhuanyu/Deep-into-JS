@@ -10,16 +10,28 @@ const str2 = `function square(n) {
     return n * n;
   }`;
 
+const apis = new Set(["addCard","addInterceptor","addPhoneContact","advancedGeneralIdentify"])
+
 const core = require("@babel/core")
 // parse字符串：babel7使用transformSync
-const result = core.transformSync(str2, {
-    plugins: ["./plugin-test.js"]
-});
-console.log(result)
+// const result = core.transformSync(str2, {
+//     plugins: [
+//       // ["./plugin-test.js"],
+//       ["./babel-plugin-transform-taro-api.js",{
+//           apis,
+//           packageName: '@tarojs/taro-h5'
+//       }]]
+// });
+// console.log(result)
 
 // parse文件
-// const result1 = core.transformFileSync('./Babel/plugin-test/file2parse.js', {
-//     plugins: ["./Babel/plugin-test/plugin-test.js"]
-// });
-// console.log(result1)
+const result1 = core.transformFileSync('./file2parse.js', {
+  plugins: [
+    // ["./plugin-test.js"],
+    ["./babel-plugin-transform-taro-api.js",{
+        apis,
+        packageName: '@tarojs/taro-h5'
+    }]]
+});
+console.log(result1)
 
