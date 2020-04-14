@@ -12,7 +12,6 @@
  */
 class PromiseManager {
   constructor(threshold){
-    this.threshold = threshold
     this.rest = threshold  // 还能直接执行多少个task
     this.readyToRun = []   // 存储等待执行的task，是一个队列，先进先出
   }
@@ -33,30 +32,27 @@ class PromiseManager {
           () => {setTimeout(this.runNextTask.bind(this), 0)}
         )
     }else{
-      console.log('this.rest <= 0')
       return new Promise((resolve, reject) =>{
         // 这里resolve.bind(this)是为了与当前promise实例绑定，执行的时候resolve改变的promise实例就是这个this指向的promise，也就是new出来的
         // 原理可以看promise中_resolve的实现
-        this.readyToRun.push([task, resolve.bind(this)])
+        this.readyToRun.push({task, resolve: resolve.bind(this)})
       })
     }
   }
   runNextTask(){
     // task状态变化了，那么增加一个直接执行task的名额
     this.rest++
-    console.log('runNextTask')
     // 如果等待执行的task列表不为空
     if(this.readyToRun.length > 0){
         //console.log(this.readyToRun.length)
         //取出队列中的一个task执行
         let item = this.readyToRun.shift()
         if(item){
-          console.log('readyToRun run')
           this.rest--
           // 执行task
-          let result = item[0]()
+          let result = item.task()
           // 改变之前addTask将task添加到this.readyToRun的那个promise的状态
-          item[1](result)
+          item.resolve(result)
           // 在task返回的promise的状态变化之后，执行下一个task
           return new Promise((resolve) =>{
             resolve(result)
@@ -77,10 +73,10 @@ let taskFactory = function(time, msg){
   })
 }
 
-runner.addTask(taskFactory.bind(null, 3000, 1)).then(data => {
+runner.addTask(taskFactory.bind(null, 1000, 1)).then(data => {
   console.log(data)
 })
-runner.addTask(taskFactory.bind(null, 3000, 2)).then(data => {
+runner.addTask(taskFactory.bind(null, 2000, 2)).then(data => {
   console.log(data)
 })
 runner.addTask(taskFactory.bind(null, 3000, 3)).then(data => {
@@ -89,10 +85,10 @@ runner.addTask(taskFactory.bind(null, 3000, 3)).then(data => {
 runner.addTask(taskFactory.bind(null, 3000, 4)).then(data => {
   console.log(data)
 })
-runner.addTask(taskFactory.bind(null, 3000, 5)).then(data => {
+runner.addTask(taskFactory.bind(null, 5000, 5)).then(data => {
   console.log(data)
 })
-runner.addTask(taskFactory.bind(null, 3000, 6)).then(data => {
+runner.addTask(taskFactory.bind(null, 2000, 6)).then(data => {
   console.log(data)
 })
 runner.addTask(taskFactory.bind(null, 1000, 7)).then(data => {
