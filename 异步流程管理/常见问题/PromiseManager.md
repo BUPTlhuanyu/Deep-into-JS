@@ -7,4 +7,3 @@
 
 #### API设计
 1. PromiseManager.prototype.addTask(task: function, shouldTaskExecute: function)
-2. PromiseManager.prototype._runNextTask()

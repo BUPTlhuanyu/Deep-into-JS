@@ -8,7 +8,7 @@
  * @Author: lhuanyu
  * @Date: 2020-04-14 13:39:24
  * @LastEditors: lhuanyu
- * @LastEditTime: 2020-04-15 16:22:10
+ * @LastEditTime: 2020-04-15 16:43:51
  */
 class PromiseManager {
   constructor(threshold, timeout = 20000){
@@ -20,14 +20,14 @@ class PromiseManager {
     this._afterTaskCompletedChanged = this._afterTaskCompletedChanged.bind(this)
     this.stopWaitingPromiseFromNow = this.stopWaitingPromiseFromNow.bind(this)
     this.wakeUp = this.wakeUp.bind(this)
-    this.stopFromNow = false
+    this._stopFromNow = false
   }
   /**
    * 用于用户暂停或者恢复等待中的task的执行
    * @param {*} value
    */
   stopWaitingPromiseFromNow(){
-    this.stopFromNow = true
+    this._stopFromNow = true
     return this.result
   }
 
@@ -36,8 +36,8 @@ class PromiseManager {
    * @param {*} value
    */  
   wakeUp(){
-    if(this.rest === this.threshold && this.stopFromNow){
-      this.stopFromNow = false
+    if(this.rest === this.threshold && this._stopFromNow){
+      this._stopFromNow = false
       this.rest--
       // 如果没有等待中的任务，那么下面的函数什么都不会做。
       this._runNextTask()
@@ -115,7 +115,7 @@ class PromiseManager {
   _runNextTask(){ 
     // task状态变化了，那么增加一个直接执行task的名额
     this.rest++
-    if(this.stopFromNow)return 
+    if(this._stopFromNow)return 
     // 如果等待执行的task列表不为空
     if(this.readyToRun.length > 0){
         //console.log(this.readyToRun.length)
