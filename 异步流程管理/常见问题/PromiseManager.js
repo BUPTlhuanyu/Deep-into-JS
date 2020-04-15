@@ -8,7 +8,7 @@
  * @Author: lhuanyu
  * @Date: 2020-04-14 13:39:24
  * @LastEditors: lhuanyu
- * @LastEditTime: 2020-04-15 17:47:12
+ * @LastEditTime: 2020-04-15 17:53:04
  */
 class PromiseManager {
   constructor(threshold, timeout = 20000){
@@ -154,7 +154,7 @@ let taskFactory = function(time, msg){
     }, time)
   })
 }
-
+console.log('start', performance.now())
 runner.addTask({task: taskFactory.bind(null, 1000, 1)}).then(data => {
   console.log(data, performance.now())
 })

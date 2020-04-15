@@ -26,6 +26,7 @@ let taskFactory = function(time, msg){
     }, time)
   })
 }
+console.log('start', performance.now())
 runner.addTask({task: taskFactory.bind(null, 1000, 1)}).then(data => {
   console.log(data, performance.now())
 })
