@@ -8,7 +8,7 @@
  * @Author: lhuanyu
  * @Date: 2020-04-14 13:39:24
  * @LastEditors: lhuanyu
- * @LastEditTime: 2020-04-15 16:43:51
+ * @LastEditTime: 2020-04-15 17:47:12
  */
 class PromiseManager {
   constructor(threshold, timeout = 20000){
@@ -156,25 +156,28 @@ let taskFactory = function(time, msg){
 }
 
 runner.addTask({task: taskFactory.bind(null, 1000, 1)}).then(data => {
-  console.log(data)
+  console.log(data, performance.now())
 })
 runner.addTask({task: taskFactory.bind(null, 2000, 2)}).then(data => {
-  console.log(data)
+  console.log(data, performance.now())
 })
 runner.addTask({task: taskFactory.bind(null, 3000, 3)}).then(data => {
-  console.log(data)
-  runner.stopWaitingPromiseFromNow(true)
+  console.log(data, performance.now())
+  runner.stopWaitingPromiseFromNow()
 })
 runner.addTask({task: taskFactory.bind(null, 3000, 4)}).then(data => {
-  console.log(data)
+  console.log(data, performance.now())
 })
 runner.addTask({task: taskFactory.bind(null, 5000, 5)}).then(data => {
-  console.log(data)
+  console.log(data, performance.now())
 })
 runner.addTask({task: taskFactory.bind(null, 2000, 6)}).then(data => {
-  console.log(data)
+  console.log(data, performance.now())
 })
 runner.addTask({task: taskFactory.bind(null, 1000, 7)}).then(data => {
-  console.log(data)
+  console.log(data, performance.now())
 })
 
+setTimeout(()=> {
+  runner.wakeUp()
+}, 15000)
