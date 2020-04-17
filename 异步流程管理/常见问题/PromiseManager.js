@@ -8,7 +8,7 @@
  * @Author: lhuanyu
  * @Date: 2020-04-14 13:39:24
  * @LastEditors: lhuanyu
- * @LastEditTime: 2020-04-15 17:53:04
+ * @LastEditTime: 2020-04-17 09:32:46
  */
 class PromiseManager {
   constructor(threshold, timeout = 20000){
@@ -103,9 +103,9 @@ class PromiseManager {
       //   )
     }else{
       return new Promise((resolve, reject) =>{
-        // 这里resolve.bind(this)是为了与当前promise实例绑定，执行的时候resolve改变的promise实例就是这个this指向的promise，也就是new出来的
+        // 这里resolve与当前promise实例绑定
         // 原理可以看promise中_resolve的实现
-        this.readyToRun.push({task, resolve: resolve.bind(this), timeout})
+        this.readyToRun.push({task, resolve, timeout})
       })
     }
   }
