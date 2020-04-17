@@ -2,13 +2,13 @@
  * @Descripttion: 异步缓冲队列，异步队列只允许一定数量的异步处于执行中，一旦某个异步完成就执行处于等待中的异步任务。
  * 关键点：
  * 1. 在finally与定时器结合使用，先将任务结果返回给用户的then回调，然后执行等待中的异步任务
- * 2. promise的resolve可以提供给用户改变该promise的状态，resolve.bind(this)
+ * 2. promise的resolve可以提供给用户改变该promise的状态
  * 3. 可以为某个promise添加多个订阅者promise，等这个promise状态变化之后，利用finally并行执行多个额外任务
  * 4. _runNextTask的递归执行，刷新等待队列
  * @Author: lhuanyu
  * @Date: 2020-04-14 13:39:24
  * @LastEditors: lhuanyu
- * @LastEditTime: 2020-04-17 09:32:46
+ * @LastEditTime: 2020-04-17 09:34:33
  */
 class PromiseManager {
   constructor(threshold, timeout = 20000){
