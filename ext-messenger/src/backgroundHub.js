@@ -14,13 +14,14 @@ const BackgroundHub = function(options) {
     this._disconnectedHandler = options.disconnectedHandler;
 
     // Hold all ports created with unique ids as keys (usually tabId, except background).
-    this._backgroundPorts = {};
-    this._contentScriptPorts = {};
-    this._popupPorts = {};
-    this._devtoolPorts = {};
+    this._backgroundPorts = {}; // 后台运行的js，处理事件用
+    this._contentScriptPorts = {}; // 当页面加载的时候会加载这个js
+    this._popupPorts = {}; // 当点击小图标，弹出弹窗页面的时候会加载这个js
+    this._devtoolPorts = {}; // 当点开devtool的时候会加载这个js
 
     // Listen to port connections.
     chrome.runtime.onConnect.addListener(this._onPortConnected);
+    // 这里的window.mockPortOnConnect在connection中创建MockPort的时候会被调用，只限于background patr才会创建MockPort
     window.mockPortOnConnect = this._onPortConnected;
 };
 
@@ -206,7 +207,7 @@ BackgroundHub.prototype._relayMessage = function(message, fromPort) {
     }.bind(this));
 };
 
-// 1. 取消消息监听
+// 1. 移除该port上注册的消息监听函数
 // 2. 从 hub 移除该 port
 // 3. 执行用户注册的移除事件处理函数
 BackgroundHub.prototype._onPortDisconnectionHandler = function(disconnectedPort) {
