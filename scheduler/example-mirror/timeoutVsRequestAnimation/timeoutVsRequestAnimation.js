@@ -191,16 +191,23 @@ function firstRender() {
 
     // 第三次event loop
     function timeVsRequestAnimation() {
+        console.log('timeVsRequestAnimation');
         elements.infoText.innerHTML = '第三次......';
     };
 
     setTimeout(timeVsRequestAnimation, 0);
+    setTimeout(timeVsRequestAnimation, 0);
+    setTimeout(timeVsRequestAnimation, 0);
 
     // 第三次event loop
     function secondRender() {
+        console.log('secondRender');
         elements.infoText.innerHTML = '第二次....';
     }
     window.addEventListener('message', secondRender);
+
+    window.postMessage('123', '*');
+    window.postMessage('123', '*');
     window.postMessage('123', '*');
 }
 setTimeout(firstRender, 2000);
