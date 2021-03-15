@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" charset="UTF-8" href="./index.css" />
+        <script src="./scheduler.js"></script>
+    </head>
+    <body>
+        <div class="electron-progress">
+            <div
+                class="progress progress-status-normal progress-show-info progress-default"
+                style="width:132px;height: 132px;"
+            >
+                <div class="progress-inner">
+                    <svg
+                        class="progress-circle"
+                        viewBox="0 0 100 100"
+                    >
+                        <path
+                            class="progress-circle-trail"
+                            fill-opacity="0"
+                        >
+                        </path>
+                        <path
+                            class="progress-circle-path"
+                            fill-opacity="0"
+                        >
+                        </path>
+                    </svg>
+                    <span class="progress-inner-text">
+                        progress
+                    </span>
+                </div>
+            </div>
+            <div class="progress-information">
+                <div class="progress-information-text">正在准备项目，请稍等片刻…</div>
+                <div class="progress-information-step">正在启动预览服务…</div>
+            </div>
+        </div>
+        <script src="./index.js"></script>
+    </body>
+</html>
